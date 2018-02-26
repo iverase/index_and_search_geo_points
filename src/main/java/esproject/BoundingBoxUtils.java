@@ -15,7 +15,6 @@ class BoundingBoxUtils {
     /** first bounding boxes is within second bounding box*/
     public static final int WITHIN = 3;
 
-
     /**
      * Checks if a bounding box is valid.
      *
@@ -113,7 +112,6 @@ class BoundingBoxUtils {
             if(upperPoint1[0] == upperPoint2[0] && lowerPoint1[0] == lowerPoint2[0]) {
                 return yIntersect;
             }
-
             return INTERSECTS;
         }
     }
@@ -160,7 +158,6 @@ class BoundingBoxUtils {
         }
         return DISJOINT;
     }
-
 
     private BoundingBoxUtils() {
         //no instances

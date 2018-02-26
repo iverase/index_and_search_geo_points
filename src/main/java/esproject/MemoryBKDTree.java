@@ -4,17 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a in-memory BKD tree. It is created with the {@link Document} to be indexed
- * and documents per leaf. It cannot be modified once created. It builds the tree using a bulk mechanism
- * that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
- * and one to compute the nodes bounding boxes.
+ * Implementation of a in-memory BKD tree. It is created with the array of {@link Document}s to be indexed
+ * and optionally thr documents per leaf. It cannot be modified once created. It builds the tree using a
+ * bulk mechanism that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
+ * and one to compute the nodes bounding boxes. It is not thread safe.
  *
- * It support queries by bounding box.
+ * It supports queries by bounding box.
  */
 public class MemoryBKDTree {
 
     /** Default max number of points on leaf nodes */
-    protected static final int DEFAULT_DOCUMENTS_PER_LEAF = 1024;
+    public static final int DEFAULT_DOCUMENTS_PER_LEAF = 1024;
 
     /** Documents on the tree */
     private final Document[] documents;
