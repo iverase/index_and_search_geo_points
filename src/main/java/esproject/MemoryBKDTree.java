@@ -9,7 +9,7 @@ import java.util.List;
  * that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
  * and one to compute the nodes bounding boxes.
  *
- * It support queries of by bounding box.
+ * It support queries by bounding box.
  */
 public class MemoryBKDTree {
 
