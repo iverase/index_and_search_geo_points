@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class MemoryBKDTreeMain {
 
-
     /**
      * Entry point of the program.
      *
@@ -80,13 +79,12 @@ public class MemoryBKDTreeMain {
         System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds ( " + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
         System.out.println("Total number of hits: " + results[1]);
         System.out.println();
-        System.out.println("Bye!");
     }
 
     /**
-     * Read the documents files and return an array of {@link Document}.
+     * Read the points file and return an array of {@link Document}.
      *
-     * @param file the ocation of the documents file.
+     * @param file the location of the documents file.
      * @return an array of {@link Document}.
      * @throws IOException if there is an error reading the file.
      */
@@ -185,8 +183,8 @@ public class MemoryBKDTreeMain {
             executeQuery(upperPoint, lowerPoint, tree, answerContainer);
             long end = System.currentTimeMillis();
             System.out.println();
-            System.out.println("Hits :" + answerContainer.size());
-            System.out.println("Query took :" + formatDouble(1e-3 * (end - start)) + " seconds");
+            System.out.println("Hits: " + answerContainer.size());
+            System.out.println("Query took " + formatDouble(1e-3 * (end - start)) + " seconds");
             System.out.println();
             totalHits += answerContainer.size();
             totalTime += end - start;
@@ -204,7 +202,7 @@ public class MemoryBKDTreeMain {
      * @param upperPoint The left upper corner of the bounding box.
      * @param lowerPoint The right lower corner of the bounding box.
      * @param tree the {@link MemoryBKDTree} to be queried.
-     * @parama the list collector.
+     * @param answer the list collector.
      */
     private static void executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree, List<Document> answer) {
         System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
@@ -238,17 +236,20 @@ public class MemoryBKDTreeMain {
         System.out.println("usage: java -jar <jarfile>.jar /path/to/geo_points.csv /path/to/queries.csv [(optional)Number of documents per leaf]");
         System.out.println();
         System.out.println("       -h | --help                      :       display this help");
+        System.out.println();
+        System.out.println("Format of 'geopoints.csv'; a string id, then latitude, then longitude, separated by one or more spaces");
+        System.out.println("Format of 'queries.csv'; minimum latitude, maximum latitude, minimum longitude and maximum longitude, all separated by one or more spaces");
     }
 
     /**
      * Format double for output.
      *
-     * @param myDouble the double to be formatted.
+     * @param aDouble the double to be formatted.
      * @return The number formatted as string.
      */
-    private static String formatDouble(double myDouble){
+    private static String formatDouble(double aDouble){
         NumberFormat numberFormatter = new DecimalFormat("####0.000");
-        return numberFormatter.format(myDouble);
+        return numberFormatter.format(aDouble);
     }
 
     private MemoryBKDTreeMain() {
