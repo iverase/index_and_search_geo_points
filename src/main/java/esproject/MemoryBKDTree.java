@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a in-memory BKD tree.
+ * Implementation of a in-memory BKD tree. It is created with the {@link Document} to be indexed
+ * and documents per leaf. It cannot be modified once created. It builds the tree using a bulk mechanism
+ * that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
+ * and one to compute the nodes bounding boxes.
+ *
+ * It support queries of type point in bounding box.
  */
 public class MemoryBKDTree {
 
@@ -50,12 +55,14 @@ public class MemoryBKDTree {
         this.startLeafNodes = (int)Math.pow(2, maxLevel - 1);
         this.leafDocumentsOffset = new int[startLeafNodes];
         int totalNumberOfNodes = 2 * startLeafNodes - 1;
-        maxBoundaries = new double[totalNumberOfNodes][2];
-        minBoundaries = new double[totalNumberOfNodes][2];
-        computeOffsets();
-        buildTree();
+        this.maxBoundaries = new double[totalNumberOfNodes][2];
+        this.minBoundaries = new double[totalNumberOfNodes][2];
         //set the root
         this.nodeId = 1;
+        //first compute documents offset for leaf nodes
+        computeOffsets();
+        //build the tree using bulk mechanism
+        buildTree();
     }
 
     /**
@@ -66,7 +73,6 @@ public class MemoryBKDTree {
      * @return the required number of levels.
      */
     private int getTreeLevels(final int numberDocuments, final int maxDocumentsPerLeaf) {
-        //it must be a better way to do this
         int levels = 1;
         int estimate = maxDocumentsPerLeaf;
         while (estimate < numberDocuments) {
@@ -82,7 +88,7 @@ public class MemoryBKDTree {
     private void computeOffsets() {
         final int minimumDocsPerLeaf = documents.length / startLeafNodes;
         final int leafsWithExtraDocuments = documents.length % startLeafNodes;
-        this.leafDocumentsOffset[0] =0;
+        this.leafDocumentsOffset[0] = 0;
         for (int i = 1; i< startLeafNodes; i++) {
             final int numberDocs = (i - 1 < leafsWithExtraDocuments) ? minimumDocsPerLeaf + 1 : minimumDocsPerLeaf;
             this.leafDocumentsOffset[i] = this.leafDocumentsOffset[i - 1] + numberDocs;
