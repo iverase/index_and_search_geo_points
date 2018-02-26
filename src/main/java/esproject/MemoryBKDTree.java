@@ -85,10 +85,10 @@ public class MemoryBKDTree {
      * Compute the offset for the documents for each leaf node.
      */
     private void computeOffsets() {
-        final int minimumDocsPerLeaf = documents.length / startLeafNodes;
-        final int leafsWithExtraDocuments = documents.length % startLeafNodes;
+        final int minimumDocsPerLeaf = this.documents.length / this.startLeafNodes;
+        final int leafsWithExtraDocuments = this.documents.length % this.startLeafNodes;
         this.leafDocumentsOffset[0] = 0;
-        for (int i = 1; i< startLeafNodes; i++) {
+        for (int i = 1; i < this.startLeafNodes; i++) {
             final int numberDocs = (i - 1 < leafsWithExtraDocuments) ? minimumDocsPerLeaf + 1 : minimumDocsPerLeaf;
             this.leafDocumentsOffset[i] = this.leafDocumentsOffset[i - 1] + numberDocs;
         }
@@ -100,26 +100,26 @@ public class MemoryBKDTree {
      */
     private void buildTree() {
         //Sort by longitude
-        Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+        Arrays.sort(this.documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         //Sort by latitude each longitude partitions. If maxLevel is uneven then there is one more partition
         //by latitude.
-        int numberPartitions = (int)Math.pow(2, maxLevel / 2);
-        int partitionOffset = leafDocumentsOffset.length / numberPartitions;
+        int numberPartitions = (int)Math.pow(2, this.maxLevel / 2);
+        int partitionOffset = this.leafDocumentsOffset.length / numberPartitions;
         for (int i = 0; i < numberPartitions; i++) {
-            int start = leafDocumentsOffset[i * partitionOffset];
-            int end = (i == numberPartitions -1) ? documents.length : leafDocumentsOffset[(i +1) * partitionOffset];
-            Arrays.sort(documents, start, end, (o1, o2) -> (o1.point[1] > o2.point[1]) ? 1 : o1.point[1] < o2.point[1] ? -1 : 0);
+            int start = this.leafDocumentsOffset[i * partitionOffset];
+            int end = (i == numberPartitions -1) ? this.documents.length : this.leafDocumentsOffset[(i +1) * partitionOffset];
+            Arrays.sort(this.documents, start, end, (o1, o2) -> (o1.point[1] > o2.point[1]) ? 1 : o1.point[1] < o2.point[1] ? -1 : 0);
         }
         //process leaf boundaries
         int j = 0;
-        for (int i = 0; i < documents.length ;) {
-            int end = (j == leafDocumentsOffset.length - 1) ? documents.length : leafDocumentsOffset[j + 1];
-            processLeafBoundaries(i, end, startLeafNodes + j);
+        for (int i = 0; i < this.documents.length ;) {
+            int end = (j == this.leafDocumentsOffset.length - 1) ? this.documents.length : this.leafDocumentsOffset[j + 1];
+            processLeafBoundaries(i, end, this.startLeafNodes + j);
             i += (end -i);
             j++;
         }
         //now build the rest of the tree upwards
-        processNodeBoundaries(maxLevel - 1);
+        processNodeBoundaries(this.maxLevel - 1);
     }
 
     /**
@@ -131,15 +131,15 @@ public class MemoryBKDTree {
         int nodeStart = (int) Math.pow(2, level - 1);
         final int numberNodes = nodeStart;
         for(int i = 0; i < numberNodes; i++ ) {
-            double maxLongitude = Math.max(maxBoundaries[2 * nodeStart - 1][0],maxBoundaries[2 * nodeStart][0]);
-            double minLongitude = Math.min(minBoundaries[2 * nodeStart - 1][0],minBoundaries[2 * nodeStart][0]);
-            double maxLatitude =  Math.max(maxBoundaries[2 * nodeStart - 1][1],maxBoundaries[2 * nodeStart][1]);
-            double minLatitude =  Math.min(minBoundaries[2 * nodeStart - 1][1],minBoundaries[2 * nodeStart][1]);
+            double maxLongitude = Math.max(this.maxBoundaries[2 * nodeStart - 1][0], this.maxBoundaries[2 * nodeStart][0]);
+            double minLongitude = Math.min(this.minBoundaries[2 * nodeStart - 1][0], this.minBoundaries[2 * nodeStart][0]);
+            double maxLatitude =  Math.max(this.maxBoundaries[2 * nodeStart - 1][1], this.maxBoundaries[2 * nodeStart][1]);
+            double minLatitude =  Math.min(this.minBoundaries[2 * nodeStart - 1][1], this.minBoundaries[2 * nodeStart][1]);
             assert maxLatitude >= minLatitude;
-            maxBoundaries[nodeStart - 1][0] = maxLongitude;
-            maxBoundaries[nodeStart - 1][1] = maxLatitude;
-            minBoundaries[nodeStart - 1][0] = minLongitude;
-            minBoundaries[nodeStart - 1][1] = minLatitude;
+            this.maxBoundaries[nodeStart - 1][0] = maxLongitude;
+            this.maxBoundaries[nodeStart - 1][1] = maxLatitude;
+            this.minBoundaries[nodeStart - 1][0] = minLongitude;
+            this.minBoundaries[nodeStart - 1][1] = minLatitude;
             nodeStart++;
         }
         if (level > 1) {
@@ -160,15 +160,16 @@ public class MemoryBKDTree {
         double maxLatitude = -90.0;
         double minLatitude = 90.0;
         for (int i = start; i < end; i++) {
-            maxLongitude = Math.max(maxLongitude, documents[i].point[0]);
-            minLongitude = Math.min(minLongitude, documents[i].point[0]);
-            maxLatitude = Math.max(maxLatitude, documents[i].point[1]);
-            minLatitude = Math.min(minLatitude, documents[i].point[1]);
+            maxLongitude = Math.max(maxLongitude, this.documents[i].point[0]);
+            minLongitude = Math.min(minLongitude, this.documents[i].point[0]);
+            maxLatitude = Math.max(maxLatitude, this.documents[i].point[1]);
+            minLatitude = Math.min(minLatitude, this.documents[i].point[1]);
         }
-        maxBoundaries[nodeId - 1][0] = maxLongitude;
-        maxBoundaries[nodeId - 1][1] = maxLatitude;
-        minBoundaries[nodeId - 1][0] = minLongitude;
-        minBoundaries[nodeId - 1][1] = minLatitude;
+        assert maxLatitude >= minLatitude;
+        this.maxBoundaries[nodeId - 1][0] = maxLongitude;
+        this.maxBoundaries[nodeId - 1][1] = maxLatitude;
+        this.minBoundaries[nodeId - 1][0] = minLongitude;
+        this.minBoundaries[nodeId - 1][1] = minLatitude;
     }
 
     /**
@@ -180,8 +181,8 @@ public class MemoryBKDTree {
      * @param collector The list collector.
      */
     public void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
-        final double[] thisUpperPoint = maxBoundaries[nodeId - 1];
-        final double[] thisLowerPoint = minBoundaries[nodeId - 1];
+        final double[] thisUpperPoint = this.maxBoundaries[nodeId - 1];
+        final double[] thisLowerPoint = this.minBoundaries[nodeId - 1];
         final int rel = BoundingBoxUtils.relate(thisUpperPoint, thisLowerPoint, upperPoint, lowerPoint);
         if (rel == BoundingBoxUtils.WITHIN) {
             //add all docs
@@ -211,8 +212,8 @@ public class MemoryBKDTree {
         final int startDocument = startDocuments();
         final int endDocument = endDocuments();
         for (int i = startDocument; i < endDocument; i++) {
-            if (BoundingBoxUtils.contains(upperPoint, lowerPoint, documents[i].point)) {
-                collector.add(documents[i]);
+            if (BoundingBoxUtils.contains(upperPoint, lowerPoint, this.documents[i].point)) {
+                collector.add(this.documents[i]);
             }
         }
     }
@@ -226,7 +227,7 @@ public class MemoryBKDTree {
         final int start = startDocuments();
         final int end = endDocuments();
         for(int i = start; i < end; i++) {
-            collector.add(documents[i]);
+            collector.add(this.documents[i]);
         }
     }
 
@@ -236,7 +237,7 @@ public class MemoryBKDTree {
      * @return true if is a leaf node else false.
      */
     private boolean isLeaf() {
-        return nodeId >= this.startLeafNodes;
+        return this.nodeId >= this.startLeafNodes;
     }
 
     /**
@@ -245,7 +246,7 @@ public class MemoryBKDTree {
      * @return true if is the root node else false.
      */
     private boolean isRoot() {
-        return nodeId == 1;
+        return this.nodeId == 1;
     }
 
     /**
@@ -257,7 +258,7 @@ public class MemoryBKDTree {
         if (isLeaf()) {
             throw new IllegalStateException("Call leftNode() method on leaf node.");
         }
-        nodeId *= 2;
+        this.nodeId *= 2;
         return this;
     }
 
@@ -270,8 +271,8 @@ public class MemoryBKDTree {
         if (isLeaf()) {
             throw new IllegalStateException("Call rightNode() method on leaf node.");
         }
-        nodeId *= 2;
-        nodeId +=  1;
+        this.nodeId *= 2;
+        this.nodeId += 1;
         return this;
     }
 
@@ -284,7 +285,7 @@ public class MemoryBKDTree {
         if (isRoot()) {
             throw new IllegalStateException("Call parent() method on root node.");
         }
-        nodeId /= 2;
+        this.nodeId /= 2;
         return this;
     }
 
@@ -294,7 +295,7 @@ public class MemoryBKDTree {
      * @return the start index for the documents under current node.
      */
     private int startDocuments() {
-        return leafDocumentsOffset[startLeafNode()];
+        return this.leafDocumentsOffset[startLeafNode()];
     }
 
     /**
@@ -304,10 +305,10 @@ public class MemoryBKDTree {
      */
     private int endDocuments() {
         final int leafIndex = endLeafNode();
-        if (leafIndex == leafDocumentsOffset.length -1) {
-            return documents.length;
+        if (leafIndex == this.leafDocumentsOffset.length - 1) {
+            return this.documents.length;
         }
-        return leafDocumentsOffset[leafIndex + 1];
+        return this.leafDocumentsOffset[leafIndex + 1];
     }
 
     /**
@@ -319,7 +320,7 @@ public class MemoryBKDTree {
     private int startLeafNode() {
         final int index;
         if (isLeaf()) {
-            index = nodeId  - this.startLeafNodes;
+            index = this.nodeId  - this.startLeafNodes;
         } else {
             index = leftNode().startLeafNode();
             parent();
@@ -336,12 +337,11 @@ public class MemoryBKDTree {
     private int endLeafNode() {
         final int index;
         if (isLeaf()) {
-            index = nodeId  - this.startLeafNodes;
+            index = this.nodeId  - this.startLeafNodes;
         } else {
             index = rightNode().endLeafNode();
             parent();
         }
-
         return index;
     }
 }
