@@ -338,4 +338,27 @@ public class MemoryBKDTree {
         }
         return index;
     }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + documents.hashCode();
+        result = 31 * result + maxBoundaries.hashCode();
+        result = 31 * result + minBoundaries.hashCode();
+        result = 31 * result + leafDocumentsOffset.hashCode();
+        result = 31 * result + Integer.hashCode(maxLevel);
+        result = 31 * result + Integer.hashCode(startLeafNodes);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        //too complex, we consider they are equals if they are the same instance
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return "levels: " + this.maxLevel + "; number docs:" + documents.length;
+    }
 }
