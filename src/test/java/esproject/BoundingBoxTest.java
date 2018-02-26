@@ -27,6 +27,24 @@ public class BoundingBoxTest {
     }
 
     @Test
+    public void testWithinContainsDateLine(){
+        double maxLon1 = -178;
+        double minLon1 = 178;
+        double maxLat1 = 2;
+        double minLat1 = -2;
+
+        double maxLon2 = -179;
+        double minLon2 = 179;
+        double maxLat2 = 1;
+        double minLat2 = -1;
+
+        int rel = BoundingBoxUtils.relate(new double[]{maxLon1, maxLat1}, new double[]{minLon1, minLat1}, new double[]{maxLon2, maxLat2}, new double[]{minLon2, minLat2});
+        assert rel == BoundingBoxUtils.CONTAINS;
+        rel = BoundingBoxUtils.relate(new double[]{maxLon2, maxLat2}, new double[]{minLon2, minLat2}, new double[]{maxLon1, maxLat1}, new double[]{minLon1, minLat1});
+        assert rel == BoundingBoxUtils.WITHIN;
+    }
+
+    @Test
     public void testWithinContains2(){
         double maxLon1 = 179.99505379082706;
         double minLon1 = 90.36496823562595;
