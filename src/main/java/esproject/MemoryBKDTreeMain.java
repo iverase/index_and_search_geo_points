@@ -140,6 +140,8 @@ public class MemoryBKDTreeMain {
         int totalHits =0;
         int numberOfQueries =0;
 
+        List<Document> answerContainer = new ArrayList<>();
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
 
@@ -168,15 +170,17 @@ public class MemoryBKDTreeMain {
                 continue;
             }
             long start = System.currentTimeMillis();
-            int hits = executeQuery(upperPoint, lowerPoint, tree);
+            executeQuery(upperPoint, lowerPoint, tree, answerContainer);
             long end = System.currentTimeMillis();
             System.out.println();
-            System.out.println("Hits :" + hits);
+            System.out.println("Hits :" + answerContainer.size());
             System.out.println("Query took :" + formatDouble(1e-3 * (end - start)) + " seconds");
             System.out.println();
-            totalHits += hits;
+            totalHits += answerContainer.size();
             totalTime += end - start;
             numberOfQueries++;
+            //clear answer
+            answerContainer.clear();
         }
         reader.close();
         return new int[] {numberOfQueries, totalHits, totalTime};
@@ -188,18 +192,22 @@ public class MemoryBKDTreeMain {
      * @param upperPoint The left upper corner of the bounding box.
      * @param lowerPoint The right lower corner of the bounding box.
      * @param tree the {@link MemoryBKDTree} to be queried.
-     * @return the number of hits.
+     * @parama the list collector.
      */
-    private static int executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree) {
+    private static void executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree, List<Document> answer) {
         System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
         System.out.println();
-        List<Document> answer =  tree.contains(upperPoint, lowerPoint);
+
+        tree.contains(upperPoint, lowerPoint, answer);
+
         System.out.println(" Results");
         System.out.println(" --------------------------");
+
         if (answer.size() == 0) {
             System.out.println(" no results for this query!");
-            return 0;
+            return;
         }
+
         for (int i =0 ; i < answer.size(); i++) {
             if ( i == 25) {
                 System.out.print(" " + answer.get(i).data + " ......");
@@ -209,7 +217,6 @@ public class MemoryBKDTreeMain {
             }
         }
         System.out.println();
-        return answer.size();
     }
 
     /**

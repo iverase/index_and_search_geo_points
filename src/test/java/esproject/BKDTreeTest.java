@@ -38,7 +38,8 @@ public class BKDTreeTest {
                 answer.add(doc);
             }
         }
-        List<Document> treeAnswer = tree.contains(upperPoint, lowerPoint);
+        List<Document> treeAnswer = new ArrayList<>();
+        tree.contains(upperPoint, lowerPoint, treeAnswer);
         assert answer.size() == 4;
         assert answer.size() == treeAnswer.size();
     }
@@ -70,7 +71,8 @@ public class BKDTreeTest {
                 answer.add(doc);
             }
         }
-        List<Document> treeAnswer = tree.contains(upperPoint, lowerPoint);
+        List<Document> treeAnswer = new ArrayList<>();
+        tree.contains(upperPoint, lowerPoint, treeAnswer);
         assert answer.size() == 6;
         assert answer.size() == treeAnswer.size();
     }
@@ -87,6 +89,7 @@ public class BKDTreeTest {
             documents.add(new Document(val, lon, lat));
         }
         MemoryBKDTree tree = new MemoryBKDTree(documents.toArray(new Document[documents.size()]));
+        List<Document> treeAnswer = new ArrayList<>();
         for (int j= 0; j< 100; j ++) {
             double minlon = random.nextDouble() * 360 - 180;
             double maxlon =random.nextDouble() * 360 - 180;
@@ -102,8 +105,9 @@ public class BKDTreeTest {
                     answer.add(doc);
                 }
             }
-            List<Document> treeAnswer = tree.contains(upperPoint, lowerPoint);
+            tree.contains(upperPoint, lowerPoint, treeAnswer);
             assert answer.size() == treeAnswer.size() : "Expected: " + answer.size() + " got: " +  treeAnswer.size();
+            treeAnswer.clear();
         }
 
     }

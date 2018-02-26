@@ -173,42 +173,29 @@ public class MemoryBKDTree {
     }
 
     /**
-     * Computes the points inside the provided bounding box.
-     *
-     * @param upperPoint The upper left corner of the bounding box.
-     * @param lowerPoint The lower right corner of the bounding box.
-     * @return The matching documents.
-     */
-    public List<Document> contains(final double[] upperPoint, final double[] lowerPoint) {
-        final List<Document> doc = new ArrayList<>();
-        contains(upperPoint, lowerPoint, doc);
-        return doc;
-    }
-
-    /**
      * Computes recursively the points inside the provided bounding box by checking the relationship
-     * of the provided bounding box with the node bounding box.
+     * of the provided bounding box with the node bounding box. Adds the result to the list collector.
      *
      * @param upperPoint The upper left corner of the bounding box.
      * @param lowerPoint The lower right corner of the bounding box.
-     * @param doc The list collector.
+     * @param collector The list collector.
      */
-    private void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> doc) {
+    public void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
         final double[] thisUpperPoint = maxBoundaries[nodeId - 1];
         final double[] thisLowerPoint = minBoundaries[nodeId - 1];
         final int rel = BoundingBoxUtils.relate(thisUpperPoint, thisLowerPoint, upperPoint, lowerPoint);
         if (rel == BoundingBoxUtils.WITHIN) {
             //add all docs
-            addAll(doc);
+            addAll(collector);
         }
         else if (rel != BoundingBoxUtils.DISJOINT) {
             if (isLeaf()) {
                 //brute force
-                addOneByOne(upperPoint, lowerPoint, doc);
+                addOneByOne(upperPoint, lowerPoint, collector);
             } else {
                 //down one level
-                leftNode().contains(upperPoint, lowerPoint, doc);
-                parent().rightNode().contains(upperPoint, lowerPoint, doc);
+                leftNode().contains(upperPoint, lowerPoint, collector);
+                parent().rightNode().contains(upperPoint, lowerPoint, collector);
                 parent();
             }
         }
@@ -219,14 +206,14 @@ public class MemoryBKDTree {
      *
      * @param upperPoint The upper left corner of the bounding box.
      * @param lowerPoint The lower right corner of the bounding box.
-     * @param doc The list collector.
+     * @param collector The list collector.
      */
-    private void addOneByOne(final double[] upperPoint, final double[] lowerPoint, final List<Document> doc) {
+    private void addOneByOne(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
         final int startDocument = startDocuments();
         final int endDocument = endDocuments();
         for (int i = startDocument; i < endDocument; i++) {
             if (BoundingBoxUtils.contains(upperPoint, lowerPoint, documents[i].point)) {
-                doc.add(documents[i]);
+                collector.add(documents[i]);
             }
         }
     }
@@ -234,13 +221,13 @@ public class MemoryBKDTree {
     /**
      * Collects all documents inside this node.
      *
-     * @param doc the list collector.
+     * @param collector the list collector.
      */
-    private void addAll(final List<Document> doc) {
+    private void addAll(final List<Document> collector) {
         final int start = startDocuments();
         final int end = endDocuments();
         for(int i = start; i < end; i++) {
-            doc.add(documents[i]);
+            collector.add(documents[i]);
         }
     }
 
