@@ -150,7 +150,7 @@ public class MemoryBKDTree {
      * Computes the bounding box of one leaf node.
      *
      * @param start The starting index of the documents.
-     * @param end THe end index of the documents.
+     * @param end The end index of the documents.
      * @param nodeId The leaf node id.
      */
     private void processLeafBoundaries(final int start, final int end, final int nodeId) {
