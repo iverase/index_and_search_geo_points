@@ -11,6 +11,12 @@ import java.util.*;
 public class MemoryBKDTreeMain {
 
 
+    /**
+     * Entry point of the program.
+     *
+     * @param args Provided arguments. See usage.
+     * @throws IOException if there is an error reading the input files.
+     */
     public static void main(String[] args) throws IOException {
         if (args.length == 1) {
             if ("-h".equals(args[0]) || "--help".equals(args[0])) {
@@ -66,10 +72,15 @@ public class MemoryBKDTreeMain {
         System.out.println("Bye!");
     }
 
+    /**
+     * Read the documents files and return an array of {@link Document}.
+     *
+     * @param file the ocation of the documents file.
+     * @return an array of {@link Document}.
+     * @throws IOException if there is an error reading the file.
+     */
     private static Document[] readDocuments(File file) throws IOException{
-        long heapSize = Runtime.getRuntime().totalMemory();
         ArrayList<Document> documents = new ArrayList<>();
-
         FileInputStream inputStream = new FileInputStream(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
@@ -115,6 +126,14 @@ public class MemoryBKDTreeMain {
         return documents.toArray(new Document[documents.size()]);
     }
 
+    /**
+     * Reads the file containing the queries and execute them.
+     *
+     * @param file the location of the queries file.
+     * @param tree the {@link MemoryBKDTree} to be queried.
+     * @return an array containing the number of queries executed, the total hits and the total execution time
+     * @throws IOException if there is an error reading the file.
+     */
     private static int[] executeQueries(File file, MemoryBKDTree tree) throws IOException{
         FileInputStream inputStream = new FileInputStream(file);
         int totalTime =0;
@@ -163,6 +182,14 @@ public class MemoryBKDTreeMain {
         return new int[] {numberOfQueries, totalHits, totalTime};
     }
 
+    /**
+     * Executes one query with the input provided.
+     *
+     * @param upperPoint The left upper corner of the bounding box.
+     * @param lowerPoint The right lower corner of the bounding box.
+     * @param tree the {@link MemoryBKDTree} to be queried.
+     * @return the number of hits.
+     */
     private static int executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree) {
         System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
         System.out.println();
@@ -185,14 +212,23 @@ public class MemoryBKDTreeMain {
         return answer.size();
     }
 
+    /**
+     * Prints the usage of this program.
+     */
     private static void printUsage() {
         System.out.println("usage: java -jar <jarfile>.jar /path/to/geo_points.csv /path/to/queries.csv [(optional)Number of documents per leaf]");
         System.out.println();
         System.out.println("       -h | --help                      :       display this help");
     }
 
+    /**
+     * Format double for output.
+     *
+     * @param myDouble the double to be formatted.
+     * @return The number formatted as string.
+     */
     private static String formatDouble(double myDouble){
-        NumberFormat numberFormatter = new DecimalFormat("####.000");
+        NumberFormat numberFormatter = new DecimalFormat("####0.000");
         return numberFormatter.format(myDouble);
     }
 }
