@@ -54,18 +54,25 @@ public class MemoryBKDTreeMain {
         Document[] documents = readDocuments(dataFile);
         long end = System.currentTimeMillis();
         int numberDocs = documents.length;
-        System.out.println("A total of " + numberDocs + " documents have been loaded in memory in " +formatDouble(1e-3 * (end -start)) + " seconds");
+        double timeLoadingDocuments = 1e-3 * (end -start);
+        System.out.println("A total of " + numberDocs + " documents have been loaded in memory in " +formatDouble(timeLoadingDocuments) + " seconds");
         System.out.println();
         System.out.println( "building the index ...");
         start = System.currentTimeMillis();
         MemoryBKDTree tree = new MemoryBKDTree(documents, docsPerLeaf);
         end = System.currentTimeMillis();
-        System.out.println("Index has been built in : " + formatDouble(1e-3 * (end -start)) + " seconds");
+        double timeBuildingIndex = 1e-3 * (end -start);
+        System.out.println("Index has been built in : " + formatDouble(timeBuildingIndex) + " seconds");
         System.out.println();
         System.out.println( "Executing queries...");
         System.out.println();
 
         int[] results = executeQueries(queryFile, tree);
+
+        System.out.println("Summary");
+        System.out.println("--------");
+        System.out.println("Time spent loading " + numberDocs + " documents into memory: " + formatDouble(timeLoadingDocuments));
+        System.out.println("Time spent indexing " + numberDocs + " documents: " + formatDouble(timeBuildingIndex));
         System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds ( " + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
         System.out.println("Total number of hits: " + results[1]);
         System.out.println();
@@ -116,6 +123,7 @@ public class MemoryBKDTreeMain {
             //available heap
             if (Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory()) {
                 if (Runtime.getRuntime().freeMemory() < 0.2 * Runtime.getRuntime().maxMemory()) {
+                    System.out.println();
                     System.out.println("No more memory for documents, breaking early...");
                     break;
                 }
