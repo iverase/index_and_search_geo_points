@@ -67,6 +67,7 @@ public class MemoryBKDTreeMain {
     }
 
     private static Document[] readDocuments(File file) throws IOException{
+        long heapSize = Runtime.getRuntime().totalMemory();
         ArrayList<Document> documents = new ArrayList<>();
 
         FileInputStream inputStream = new FileInputStream(file);
@@ -99,6 +100,14 @@ public class MemoryBKDTreeMain {
             documents.add(new Document(data[0], longitude, latitude));
             if (++count % 1e6 == 0) {
                 System.out.print(new StringBuilder("\r  " + count + " documents loaded in memory"));
+            }
+            //basic check to prevent out of memory errors. Documents should get at maximum 80% of
+            //available heap
+            if (Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory()) {
+                if (Runtime.getRuntime().freeMemory() < 0.2 * Runtime.getRuntime().maxMemory()) {
+                    System.out.println("No more memory for documents, breaking early...");
+                    break;
+                }
             }
         }
         reader.close();
