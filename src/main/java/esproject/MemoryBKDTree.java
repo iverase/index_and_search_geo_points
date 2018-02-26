@@ -135,7 +135,6 @@ public class MemoryBKDTree {
             double minLongitude = Math.min(this.minBoundaries[2 * nodeStart - 1][0], this.minBoundaries[2 * nodeStart][0]);
             double maxLatitude =  Math.max(this.maxBoundaries[2 * nodeStart - 1][1], this.maxBoundaries[2 * nodeStart][1]);
             double minLatitude =  Math.min(this.minBoundaries[2 * nodeStart - 1][1], this.minBoundaries[2 * nodeStart][1]);
-            assert maxLatitude >= minLatitude;
             this.maxBoundaries[nodeStart - 1][0] = maxLongitude;
             this.maxBoundaries[nodeStart - 1][1] = maxLatitude;
             this.minBoundaries[nodeStart - 1][0] = minLongitude;
@@ -155,17 +154,16 @@ public class MemoryBKDTree {
      * @param nodeId The leaf node id.
      */
     private void processLeafBoundaries(final int start, final int end, final int nodeId) {
-        double maxLongitude = -180.0;
-        double minLongitude = 180.0;
-        double maxLatitude = -90.0;
-        double minLatitude = 90.0;
-        for (int i = start; i < end; i++) {
+        double maxLongitude = this.documents[start].point[0];
+        double minLongitude = this.documents[start].point[0];
+        double maxLatitude = this.documents[start].point[1];
+        double minLatitude = this.documents[start].point[1];
+        for (int i = start + 1; i < end; i++) {
             maxLongitude = Math.max(maxLongitude, this.documents[i].point[0]);
             minLongitude = Math.min(minLongitude, this.documents[i].point[0]);
             maxLatitude = Math.max(maxLatitude, this.documents[i].point[1]);
             minLatitude = Math.min(minLatitude, this.documents[i].point[1]);
         }
-        assert maxLatitude >= minLatitude;
         this.maxBoundaries[nodeId - 1][0] = maxLongitude;
         this.maxBoundaries[nodeId - 1][1] = maxLatitude;
         this.minBoundaries[nodeId - 1][0] = minLongitude;
