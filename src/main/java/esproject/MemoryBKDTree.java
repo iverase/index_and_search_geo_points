@@ -10,7 +10,7 @@ import java.util.List;
  * that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
  * and one to compute the nodes bounding boxes.
  *
- * It support queries of type point in bounding box.
+ * It support queries of by bounding box.
  */
 public class MemoryBKDTree {
 
@@ -25,9 +25,9 @@ public class MemoryBKDTree {
     private final int startLeafNodes;
     /** Offsets of documents for each leaf node.*/
     private final int[] leafDocumentsOffset;
-    /** Upper point for each node of the tree. It can be retrieve by nodeId -1*/
+    /** Upper point for each node of the tree. It can be fetched by nodeId -1*/
     private final double[][] maxBoundaries;
-    /** Lower point for each node of the tree. It can be retrieve by nodeId -1*/
+    /** Lower point for each node of the tree. It can be fetched by nodeId -1*/
     private final double[][] minBoundaries;
 
     /** Current node */
@@ -43,7 +43,7 @@ public class MemoryBKDTree {
     }
 
     /**
-     * Constructor that takes the  number of documents per leaf.
+     * Constructor that takes the number of documents per leaf.
      *
      * @param documents the documents to index.
      * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
@@ -346,5 +346,3 @@ public class MemoryBKDTree {
         return index;
     }
 }
-
-
