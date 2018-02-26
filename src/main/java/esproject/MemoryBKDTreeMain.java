@@ -67,17 +67,36 @@ public class MemoryBKDTreeMain {
     }
 
     private static Document[] readDocuments(File file) throws IOException{
+        ArrayList<Document> documents = new ArrayList<>();
+
         FileInputStream inputStream = new FileInputStream(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        ArrayList<Document> documents = new ArrayList<>();
         String line;
         int count =0;
         while ((line = reader.readLine()) != null) {
             String[] data = line.split("\\s+");
             if (data.length != 3) {
-                throw new IllegalArgumentException("Index input data not properly formed: " + line);
+                System.out.println("Index input data not properly formed: " + line);
+                System.exit(0);
             }
-            documents.add(new Document(data[0], Double.parseDouble(data[2]), Double.parseDouble(data[1])));
+            double longitude = -999;
+            double latitude = -999;
+            try {
+                longitude = Double.parseDouble(data[2]);
+                latitude = Double.parseDouble(data[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("Index input data not properly formed, not a number: " + line);
+                System.exit(0);
+            }
+            if (!BoundingBoxUtils.checkLongitude(longitude)) {
+                System.out.println("Index input data not properly formed, longitude out of bounds: " + line);
+                System.exit(0);
+            }
+            if (!BoundingBoxUtils.checkLatitude(latitude)) {
+                System.out.println("Index input data not properly formed, latitude out of bounds: " + line);
+                System.exit(0);
+            }
+            documents.add(new Document(data[0], longitude, latitude));
             if (++count % 1e6 == 0) {
                 System.out.print(new StringBuilder("\r  " + count + " documents loaded in memory"));
             }
@@ -103,8 +122,25 @@ public class MemoryBKDTreeMain {
                 System.out.println();
                 continue;
             }
+            double[] upperPoint = new double[2];
+            double[] lowerPoint= new double[2];
+            try {
+                upperPoint[0] = Double.parseDouble(data[3]);
+                upperPoint[1] = Double.parseDouble(data[1]);
+                lowerPoint[0] = Double.parseDouble(data[2]);
+                lowerPoint[1] = Double.parseDouble(data[0]);
+            } catch (NumberFormatException e) {
+                System.out.println("Skipping query because input data not properly formed, not a number: " + line);
+                System.out.println();
+                continue;
+            }
+            if (!BoundingBoxUtils.checkBoundingBox(upperPoint, lowerPoint)) {
+                System.out.println("Skipping query because input data not properly formed, not a valid bounding box: " + line);
+                System.out.println();
+                continue;
+            }
             long start = System.currentTimeMillis();
-            int hits = executeQuery(data, tree);
+            int hits = executeQuery(upperPoint, lowerPoint, tree);
             long end = System.currentTimeMillis();
             System.out.println();
             System.out.println("Hits :" + hits);
@@ -118,14 +154,10 @@ public class MemoryBKDTreeMain {
         return new int[] {numberOfQueries, totalHits, totalTime};
     }
 
-    private static int executeQuery(String[] query, MemoryBKDTree tree) {
-        final double minLatitude = Double.parseDouble(query[0]);
-        final double maxLatitude = Double.parseDouble(query[1]);
-        final double minLongitude = Double.parseDouble(query[2]);
-        final double maxLongitude = Double.parseDouble(query[3]);
-        System.out.println("Executing query: " + query[0] + " " + query[1] + " " + query[2] + " " + query[3]);
+    private static int executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree) {
+        System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
         System.out.println();
-        List<Document> answer =  tree.contains(new double[]{maxLongitude, maxLatitude}, new double[]{minLongitude, minLatitude});
+        List<Document> answer =  tree.contains(upperPoint, lowerPoint);
         System.out.println(" Results");
         System.out.println(" --------------------------");
         if (answer.size() == 0) {

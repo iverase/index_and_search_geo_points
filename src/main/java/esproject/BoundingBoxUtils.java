@@ -15,6 +15,44 @@ class BoundingBoxUtils {
     /** first bounding boxes is within second bounding box*/
     public static final int WITHIN = 3;
 
+
+    /**
+     * Checks if a bounding box is valid.
+     *
+     * @param upperPoint The left upper corner of the bounding box.
+     * @param lowerPoint The right lower corner of the bounding box.
+     * @return true if it i valid.
+     */
+    public static boolean checkBoundingBox(final double[] upperPoint, final double[] lowerPoint) {
+        if (checkLongitude(upperPoint[0]) && checkLongitude(lowerPoint[0])
+                && checkLatitude(lowerPoint[1]) && checkLatitude(lowerPoint[1])) {
+            if (upperPoint[1] > lowerPoint[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a longitude validity.
+     *
+     * @param longitude the longitude to check.
+     * @return true if valid.
+     */
+    public static boolean checkLongitude(double longitude) {
+        return longitude >= -180 && longitude <= 180;
+    }
+
+    /**
+     * Checks if a latitude validity.
+     *
+     * @param latitude the latitude to check.
+     * @return true if valid.
+     */
+    public static boolean checkLatitude(double latitude) {
+        return latitude >= -90 && latitude <= 90;
+    }
+
     /**
      * Checks if a point is inside of a bounding box.
      *
@@ -121,6 +159,7 @@ class BoundingBoxUtils {
         }
         return DISJOINT;
     }
+
 
     private BoundingBoxUtils() {
         //no instances
