@@ -34,7 +34,7 @@ class BoundingBoxUtils {
     }
 
     /**
-     * Checks if a longitude validity.
+     * Checks if a longitude is valid.
      *
      * @param longitude the longitude to check.
      * @return true if valid.
@@ -44,7 +44,7 @@ class BoundingBoxUtils {
     }
 
     /**
-     * Checks if a latitude validity.
+     * Checks if a latitude is valid.
      *
      * @param latitude the latitude to check.
      * @return true if valid.
@@ -92,7 +92,8 @@ class BoundingBoxUtils {
      * @param lowerPoint1 The right lower corner of the first bounding box.
      * @param upperPoint2 The left upper corner of the second bounding box.
      * @param lowerPoint2 The right lower corner of the second bounding box.
-     * @return the relationship of the first bounding box with the second bounding box.
+     * @return the relationship of the first bounding box with the second bounding box. One
+     * of {@value DISJOINT}, {@value INTERSECTS}, {@value CONTAINS} or {@value WITHIN}.
      */
     public static int relate(final double[] upperPoint1, final double[] lowerPoint1, final double[] upperPoint2, final double[] lowerPoint2) {
         final int yIntersect = relate(lowerPoint1[1], upperPoint1[1],lowerPoint2[1], upperPoint2[1]);
