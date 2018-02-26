@@ -117,7 +117,7 @@ class BoundingBoxUtils {
         }
     }
 
-    public static int relateXRange(double coordMin1, double coordMax1, double coordMin2, double coordMax2) {
+    private static int relateXRange(double coordMin1, double coordMax1, double coordMin2, double coordMax2) {
         double rawWidth1 = coordMax1 - coordMin1;
         if (rawWidth1 == 360.0D) {
             return 2;
