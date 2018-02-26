@@ -2,7 +2,7 @@ package esproject;
 
 /**
  * Methods for computing spatial relationship between two bounding boxes and a bounding box
- * and a point. Based on the Spatial4J implementation.
+ * and a point.
  */
 class BoundingBoxUtils {
 
