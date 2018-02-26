@@ -115,7 +115,7 @@ public class MemoryBKDTree {
         for (int i = 0; i < this.documents.length ;) {
             int end = (j == this.leafDocumentsOffset.length - 1) ? this.documents.length : this.leafDocumentsOffset[j + 1];
             processLeafBoundaries(i, end, this.startLeafNodes + j);
-            i += (end -i);
+            i += (end - i);
             j++;
         }
         //now build the rest of the tree upwards
@@ -131,14 +131,10 @@ public class MemoryBKDTree {
         int nodeStart = (int) Math.pow(2, level - 1);
         final int numberNodes = nodeStart;
         for(int i = 0; i < numberNodes; i++ ) {
-            double maxLongitude = Math.max(this.maxBoundaries[2 * nodeStart - 1][0], this.maxBoundaries[2 * nodeStart][0]);
-            double minLongitude = Math.min(this.minBoundaries[2 * nodeStart - 1][0], this.minBoundaries[2 * nodeStart][0]);
-            double maxLatitude =  Math.max(this.maxBoundaries[2 * nodeStart - 1][1], this.maxBoundaries[2 * nodeStart][1]);
-            double minLatitude =  Math.min(this.minBoundaries[2 * nodeStart - 1][1], this.minBoundaries[2 * nodeStart][1]);
-            this.maxBoundaries[nodeStart - 1][0] = maxLongitude;
-            this.maxBoundaries[nodeStart - 1][1] = maxLatitude;
-            this.minBoundaries[nodeStart - 1][0] = minLongitude;
-            this.minBoundaries[nodeStart - 1][1] = minLatitude;
+            this.maxBoundaries[nodeStart - 1][0] = Math.max(this.maxBoundaries[2 * nodeStart - 1][0], this.maxBoundaries[2 * nodeStart][0]);
+            this.minBoundaries[nodeStart - 1][0] = Math.min(this.minBoundaries[2 * nodeStart - 1][0], this.minBoundaries[2 * nodeStart][0]);
+            this.maxBoundaries[nodeStart - 1][1] = Math.max(this.maxBoundaries[2 * nodeStart - 1][1], this.maxBoundaries[2 * nodeStart][1]);
+            this.minBoundaries[nodeStart - 1][1] = Math.min(this.minBoundaries[2 * nodeStart - 1][1], this.minBoundaries[2 * nodeStart][1]);
             nodeStart++;
         }
         if (level > 1) {
