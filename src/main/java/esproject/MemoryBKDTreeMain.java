@@ -6,7 +6,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 /**
- * Main class to execute program.
+ * Class to execute program.
  */
 public class MemoryBKDTreeMain {
 
@@ -249,5 +249,9 @@ public class MemoryBKDTreeMain {
     private static String formatDouble(double myDouble){
         NumberFormat numberFormatter = new DecimalFormat("####0.000");
         return numberFormatter.format(myDouble);
+    }
+
+    private MemoryBKDTreeMain() {
+        //no instances
     }
 }
