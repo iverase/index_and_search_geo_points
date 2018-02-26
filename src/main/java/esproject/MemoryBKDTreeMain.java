@@ -48,6 +48,10 @@ public class MemoryBKDTreeMain {
                 System.out.println("The input for documents per leaf is not an integer: " + args[2]);
                 System.exit(0);
             }
+            if (docsPerLeaf < 2) {
+                System.out.println("The input for documents per leaf must be bigger than 1: " + args[2]);
+                System.exit(0);
+            }
         }
         System.out.println("Program started, loading documents in memory....");
         long start = System.currentTimeMillis();
