@@ -1,5 +1,4 @@
 group 'index_and_search_geo_points'
-version '1.0'
 
 apply plugin: 'java'
 
