@@ -1,5 +1,6 @@
 package esproject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,31 +62,51 @@ public class MemoryBKDTree {
     private int nodeId;
 
     /**
-     * Constructor that uses the default number of documents per leaf.
+     * Create a tree
      *
-     * @param documents the documents to index.
+     * @param documents
+     * @return
      */
-    public MemoryBKDTree(final Document[] documents) {
-        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, 0, documents.length);
+    public static List<MemoryBKDTree> createBKDTree(Document[] documents) {
+        return createBKDTree(documents, DEFAULT_DOCUMENTS_PER_LEAF);
     }
 
     /**
-     * Constructor that uses the default number of documents per leaf and a subset of the input array.
+     * Create a tree
      *
-     * @param documents the documents to index.
+     * @param documents
+     * @return
      */
-    public MemoryBKDTree(final Document[] documents, int startDocuments, int endDocuments) {
-        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, startDocuments, endDocuments);
+    public static List<MemoryBKDTree> createBKDTree(Document[] documents, int docsPerLeaf) {
+        List<MemoryBKDTree> memoryBKDTrees = new ArrayList<>();
+        int start = 0;
+        while (true) {
+            int docsFullTree = getDocumentsForFullTree(documents.length - start, docsPerLeaf);
+            memoryBKDTrees.add(new MemoryBKDTree(documents, docsPerLeaf, start, start + docsFullTree));
+            start = start + docsFullTree;
+            if (start >= documents.length) {
+                break;
+            }
+        }
+        return memoryBKDTrees;
     }
 
     /**
-     * Constructor that takes the number of documents per leaf.
-     *
-     * @param documents           the documents to index.
-     * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
+     * Returns the number of documents needed to fill up a tree.
+     * @param length The size of the documents.
+     * @param maxDocsPerLef the max number of documents per leaf.
+     * @return the number of documents needed to fill up a tree. Always lower or equal
+     * to the provided length.
      */
-    public MemoryBKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
-        this(documents, maxDocumentsPerLeaf, 0, documents.length);
+    private static int getDocumentsForFullTree(final int length, final int maxDocsPerLef) {
+        if (length <= maxDocsPerLef) {
+            return length;
+        }
+        int level = 2;
+        while ((int) Math.pow(2, level - 1) * maxDocsPerLef < length) {
+            level++;
+        }
+        return (int) Math.pow(2, level - 2) * maxDocsPerLef;
     }
 
     /**
