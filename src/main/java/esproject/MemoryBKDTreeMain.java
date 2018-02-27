@@ -77,7 +77,7 @@ public class MemoryBKDTreeMain {
         System.out.println("--------");
         System.out.println("Time spent loading " + numberDocs + " points into memory: " + formatDouble(timeLoadingDocuments));
         System.out.println("Time spent indexing the points: " + formatDouble(timeBuildingIndex));
-        System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds ( " + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
+        System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds (" + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
         System.out.println("Total number of hits: " + results[1]);
         System.out.println();
     }
