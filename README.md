@@ -22,8 +22,6 @@ navigating the structure. It holds the following data structures:
 indexed points.
 * A sorted array of bounding boxes: Allows to get the bounding box of a tree node by node id. The size of the array is the number
  of nodes in the tree.
-* A sorted array of points (documents) offsets for leaf nodes: It allows to get the start and end index in the array of
-points for each leaf node.  The size of the array is the number of leaf nodes.
 
 This implementation uses a bulk loading mechanism to build the tree that requires only three passes of the input points. One for sorting
 the points by longitude, one for sorting the points by latitude for each longitude partition and one to build the bounding boxes. After the
