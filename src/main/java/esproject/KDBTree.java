@@ -1,6 +1,5 @@
 package esproject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import java.util.List;
  * <p>
  * It supports queries by bounding box.
  */
-public class MemoryBKDTree {
+public class KDBTree {
 
     /**
      * Default max number of points on leaf nodes
@@ -62,60 +61,13 @@ public class MemoryBKDTree {
     private int nodeId;
 
     /**
-     * Create a tree
-     *
-     * @param documents
-     * @return
-     */
-    public static List<MemoryBKDTree> createBKDTree(Document[] documents) {
-        return createBKDTree(documents, DEFAULT_DOCUMENTS_PER_LEAF);
-    }
-
-    /**
-     * Create a tree
-     *
-     * @param documents
-     * @return
-     */
-    public static List<MemoryBKDTree> createBKDTree(Document[] documents, int docsPerLeaf) {
-        List<MemoryBKDTree> memoryBKDTrees = new ArrayList<>();
-        int start = 0;
-        while (true) {
-            int docsFullTree = getDocumentsForFullTree(documents.length - start, docsPerLeaf);
-            memoryBKDTrees.add(new MemoryBKDTree(documents, docsPerLeaf, start, start + docsFullTree));
-            start = start + docsFullTree;
-            if (start >= documents.length) {
-                break;
-            }
-        }
-        return memoryBKDTrees;
-    }
-
-    /**
-     * Returns the number of documents needed to fill up a tree.
-     * @param length The size of the documents.
-     * @param maxDocsPerLef the max number of documents per leaf.
-     * @return the number of documents needed to fill up a tree. Always lower or equal
-     * to the provided length.
-     */
-    private static int getDocumentsForFullTree(final int length, final int maxDocsPerLef) {
-        if (length <= maxDocsPerLef) {
-            return length;
-        }
-        int level = 2;
-        while ((int) Math.pow(2, level - 1) * maxDocsPerLef < length) {
-            level++;
-        }
-        return (int) Math.pow(2, level - 2) * maxDocsPerLef;
-    }
-
-    /**
      * Constructor that takes the number of documents per leaf and a start and a subset of the input array.
      *
      * @param documents           the documents to index.
      * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
+     * @param sorted              flags if th documents are sorted by longitude.
      */
-    public MemoryBKDTree(final Document[] documents, final int maxDocumentsPerLeaf, int startDocuments, int endDocuments) {
+    public KDBTree(final Document[] documents, final int maxDocumentsPerLeaf, int startDocuments, int endDocuments, boolean sorted) {
         this.documents = documents;
         this.maxLevel = getTreeLevels(endDocuments - startDocuments, maxDocumentsPerLeaf);
         this.startDocument = startDocuments;
@@ -131,7 +83,7 @@ public class MemoryBKDTree {
         //set the root
         this.nodeId = 1;
         //build the tree using bulk mechanism
-        buildTree();
+        buildTree(sorted);
     }
 
     /**
@@ -154,10 +106,14 @@ public class MemoryBKDTree {
     /**
      * Build the tree. First uses merge sort to order document by longitude. Then merge sort again to order
      * documents by longitude partition. Finally computes the bounding boxes for each node of the tree.
+     *
+     * @param sorted              flags if th documents are sorted by longitude.
      */
-    private void buildTree() {
-        //Sort by longitude
-        Arrays.sort(this.documents, this.startDocument, this.endDocument, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+    private void buildTree(boolean sorted) {
+        //Sort by longitude if needed
+        if (!sorted) {
+            Arrays.sort(this.documents, this.startDocument, this.endDocument, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+        }
         //Sort by latitude each longitude partitions. If maxLevel is uneven then there is one more partition
         //by latitude.
         int numberLongitudePartitions = (int) Math.pow(2, this.maxLevel / 2);
@@ -306,7 +262,7 @@ public class MemoryBKDTree {
      *
      * @return this tree.
      */
-    private MemoryBKDTree leftNode() {
+    private KDBTree leftNode() {
         if (isLeaf()) {
             throw new IllegalStateException("Call leftNode() method on leaf node.");
         }
@@ -319,7 +275,7 @@ public class MemoryBKDTree {
      *
      * @return this tree
      */
-    private MemoryBKDTree rightNode() {
+    private KDBTree rightNode() {
         if (isLeaf()) {
             throw new IllegalStateException("Call rightNode() method on leaf node.");
         }
@@ -333,7 +289,7 @@ public class MemoryBKDTree {
      *
      * @return this tree.
      */
-    private MemoryBKDTree parent() {
+    private KDBTree parent() {
         if (isRoot()) {
             throw new IllegalStateException("Call parent() method on root node.");
         }
@@ -424,6 +380,6 @@ public class MemoryBKDTree {
 
     @Override
     public String toString() {
-        return "levels: " + this.maxLevel + "; number docs:" + documents.length;
+        return "levels: " + this.maxLevel  + "; docs per leaf:" + minimumDocsPerLeaf + "; number docs:" + documents.length;
     }
 }

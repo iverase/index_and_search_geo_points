@@ -22,7 +22,8 @@ public class BKDTreeTest {
         documents.add(new Document("6", 0, 30));
         documents.add(new Document("7", 30, 30));
         documents.add(new Document("8", 40, 40));
-        List<MemoryBKDTree> bkdTrees = MemoryBKDTree.createBKDTree(documents.toArray(new Document[documents.size()]));
+
+        BKDTree tree = new BKDTree(documents.toArray(new Document[documents.size()]));
 
         double minlon = -2;
         double maxlon = 2;
@@ -39,9 +40,9 @@ public class BKDTreeTest {
             }
         }
         List<Document> treeAnswer = new ArrayList<>();
-        for (MemoryBKDTree tree : bkdTrees) {
-            tree.contains(upperPoint, lowerPoint, treeAnswer);
-        }
+
+        tree.contains(upperPoint, lowerPoint, treeAnswer);
+
         assert answer.size() == 4;
         assert answer.size() == treeAnswer.size();
     }
@@ -57,7 +58,8 @@ public class BKDTreeTest {
         documents.add(new Document("6", 179, 1));
         documents.add(new Document("7", 30, 0));
         documents.add(new Document("8", -40, 0));
-        List<MemoryBKDTree> bkdTrees = MemoryBKDTree.createBKDTree(documents.toArray(new Document[documents.size()]));
+
+        BKDTree tree = new BKDTree(documents.toArray(new Document[documents.size()]));
 
         double minlon = 178;
         double maxlon = -178;
@@ -74,9 +76,9 @@ public class BKDTreeTest {
             }
         }
         List<Document> treeAnswer = new ArrayList<>();
-        for (MemoryBKDTree tree : bkdTrees) {
-            tree.contains(upperPoint, lowerPoint, treeAnswer);
-        }
+
+        tree.contains(upperPoint, lowerPoint, treeAnswer);
+
         assert answer.size() == 6;
         assert answer.size() == treeAnswer.size();
     }
@@ -93,7 +95,8 @@ public class BKDTreeTest {
             documents.add(new Document(val, lon, lat));
         }
 
-        List<MemoryBKDTree> bkdTrees = MemoryBKDTree.createBKDTree(documents.toArray(new Document[documents.size()]));
+        BKDTree tree = new BKDTree(documents.toArray(new Document[documents.size()]));
+
         List<Document> treeAnswer = new ArrayList<>();
         for (int j= 0; j< 100; j ++) {
             double minlon = random.nextDouble() * 360 - 180;
@@ -110,9 +113,9 @@ public class BKDTreeTest {
                     answer.add(doc);
                 }
             }
-            for (MemoryBKDTree tree : bkdTrees) {
-                tree.contains(upperPoint, lowerPoint, treeAnswer);
-            }
+
+            tree.contains(upperPoint, lowerPoint, treeAnswer);
+
             assert answer.size() == treeAnswer.size() : "Expected: " + answer.size() + " got: " +  treeAnswer.size();
             treeAnswer.clear();
         }

@@ -3,7 +3,7 @@ package esproject;
 import java.util.Objects;
 
 /**
- * Represents a document that can be indexed in a {@link MemoryBKDTree}.
+ * Represents a document that can be indexed in a {@link KDBTree}.
  */
 class Document {
 

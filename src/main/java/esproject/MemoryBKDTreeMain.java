@@ -38,7 +38,7 @@ public class MemoryBKDTreeMain {
             System.out.println("The input query file does not exists: " + args[1]);
             System.exit(0);
         }
-        int docsPerLeaf = MemoryBKDTree.DEFAULT_DOCUMENTS_PER_LEAF;
+        int docsPerLeaf = KDBTree.DEFAULT_DOCUMENTS_PER_LEAF;
         if (args.length == 3) {
             try {
                 docsPerLeaf = Integer.parseInt(args[2]);
@@ -64,8 +64,7 @@ public class MemoryBKDTreeMain {
 
         System.out.println( "building the index ...");
         start = System.currentTimeMillis();
-        //TO DO: if we sort the array here by longitude we make sure the trees do not overlap.
-        List<MemoryBKDTree> memoryBKDTrees = MemoryBKDTree.createBKDTree(documents, docsPerLeaf);
+        BKDTree tree = new BKDTree(documents, docsPerLeaf);
         end = System.currentTimeMillis();
         double timeBuildingIndex = 1e-3 * (end -start);
         System.out.println("Index has been built in : " + formatDouble(timeBuildingIndex) + " seconds");
@@ -73,7 +72,7 @@ public class MemoryBKDTreeMain {
         System.out.println( "Executing queries...");
         System.out.println();
 
-        int[] results = executeQueries(queryFile, memoryBKDTrees);
+        int[] results = executeQueries(queryFile, tree);
 
         System.out.println("Summary");
         System.out.println("--------");
@@ -143,11 +142,11 @@ public class MemoryBKDTreeMain {
      * Reads the file containing the queries and execute them.
      *
      * @param file the location of the queries file.
-     * @param memoryBKDTrees the list of {@link MemoryBKDTree} to be queried.
+     * @param tree the {@link BKDTree} to be queried.
      * @return an array containing the number of queries executed, the total hits and the total execution time
      * @throws IOException if there is an error reading the file.
      */
-    private static int[] executeQueries(File file, List<MemoryBKDTree> memoryBKDTrees) throws IOException{
+    private static int[] executeQueries(File file, BKDTree tree) throws IOException{
         FileInputStream inputStream = new FileInputStream(file);
         int totalTime =0;
         int totalHits =0;
@@ -183,7 +182,7 @@ public class MemoryBKDTreeMain {
                 continue;
             }
             long start = System.currentTimeMillis();
-            executeQuery(upperPoint, lowerPoint, memoryBKDTrees, answerContainer);
+            executeQuery(upperPoint, lowerPoint, tree, answerContainer);
             long end = System.currentTimeMillis();
             System.out.println();
             System.out.println("Hits: " + answerContainer.size());
@@ -204,16 +203,14 @@ public class MemoryBKDTreeMain {
      *
      * @param upperPoint The left upper corner of the bounding box.
      * @param lowerPoint The right lower corner of the bounding box.
-     * @param memoryBKDTrees the list of {@link MemoryBKDTree} to be queried.
+     * @param tree the {@link BKDTree} to be queried.
      * @param answer the list collector.
      */
-    private static void executeQuery(double[] upperPoint, double[] lowerPoint, List<MemoryBKDTree> memoryBKDTrees, List<Document> answer) {
+    private static void executeQuery(double[] upperPoint, double[] lowerPoint, BKDTree tree, List<Document> answer) {
         System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
         System.out.println();
 
-        for (MemoryBKDTree tree : memoryBKDTrees) {
-            tree.contains(upperPoint, lowerPoint, answer);
-        }
+        tree.contains(upperPoint, lowerPoint, answer);
 
         System.out.println(" Results");
         System.out.println(" --------------------------");
