@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a in-memory BKD tree. It is created with the array of {@link Document}s to be indexed
- * and optionally thr documents per leaf. It cannot be modified once created. It builds the tree using a
+ * Implementation of a in-memory BKD tree (static KDB tree) . It is created with the array of {@link Document}s to be indexed
+ * and optionally the documents per leaf. It cannot be modified once created. It builds the tree using a
  * bulk mechanism that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
  * and one to compute the nodes bounding boxes. It is not thread safe.
  *

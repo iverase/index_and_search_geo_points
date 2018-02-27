@@ -25,7 +25,6 @@ public class MemoryBKDTreeMain {
         }
         if (args.length != 2 && args.length != 3) {
             System.out.println("The program has been called with incorrect parameters:");
-            System.out.println();
             printUsage();
             System.exit(0);
         }
@@ -44,21 +43,23 @@ public class MemoryBKDTreeMain {
             try {
                 docsPerLeaf = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                System.out.println("The input for documents per leaf is not an integer: " + args[2]);
+                System.out.println("The input for points per leaf is not an integer: " + args[2]);
+                printUsage();
                 System.exit(0);
             }
             if (docsPerLeaf < 2) {
-                System.out.println("The input for documents per leaf must be bigger than 1: " + args[2]);
+                System.out.println("The input for points per leaf must be bigger than 1: " + args[2]);
+                printUsage();
                 System.exit(0);
             }
         }
-        System.out.println("Program started, loading documents in memory....");
+        System.out.println("Program started, loading points in memory....");
         long start = System.currentTimeMillis();
         Document[] documents = readDocuments(dataFile);
         long end = System.currentTimeMillis();
         int numberDocs = documents.length;
         double timeLoadingDocuments = 1e-3 * (end -start);
-        System.out.println("A total of " + numberDocs + " documents have been loaded in memory in " +formatDouble(timeLoadingDocuments) + " seconds");
+        System.out.println("A total of " + numberDocs + " points have been loaded in memory in " +formatDouble(timeLoadingDocuments) + " seconds");
         System.out.println();
         System.out.println( "building the index ...");
         start = System.currentTimeMillis();
@@ -74,8 +75,8 @@ public class MemoryBKDTreeMain {
 
         System.out.println("Summary");
         System.out.println("--------");
-        System.out.println("Time spent loading " + numberDocs + " documents into memory: " + formatDouble(timeLoadingDocuments));
-        System.out.println("Time spent indexing " + numberDocs + " documents: " + formatDouble(timeBuildingIndex));
+        System.out.println("Time spent loading " + numberDocs + " points into memory: " + formatDouble(timeLoadingDocuments));
+        System.out.println("Time spent indexing the points: " + formatDouble(timeBuildingIndex));
         System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds ( " + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
         System.out.println("Total number of hits: " + results[1]);
         System.out.println();
@@ -119,14 +120,14 @@ public class MemoryBKDTreeMain {
             }
             documents.add(new Document(data[0], longitude, latitude));
             if (++count % 1e6 == 0) {
-                System.out.print(new StringBuilder("\r  " + count + " documents loaded in memory"));
+                System.out.print(new StringBuilder("\r  " + (int)(count / 1e6) + " million points loaded in memory"));
             }
             //basic check to prevent out of memory errors. Documents should get at maximum 80% of
             //available heap
             if (Runtime.getRuntime().totalMemory() == Runtime.getRuntime().maxMemory()) {
                 if (Runtime.getRuntime().freeMemory() < 0.2 * Runtime.getRuntime().maxMemory()) {
                     System.out.println();
-                    System.out.println("No more memory for documents, breaking early...");
+                    System.out.println("No more memory for points, breaking early...");
                     break;
                 }
             }
@@ -233,12 +234,15 @@ public class MemoryBKDTreeMain {
      * Prints the usage of this program.
      */
     private static void printUsage() {
-        System.out.println("usage: java -jar <jarfile>.jar /path/to/geo_points.csv /path/to/queries.csv [(optional)Number of documents per leaf]");
+        System.out.println();
+        System.out.println("  usage: java -jar <jarfile>.jar /path/to/geo_points.csv /path/to/queries.csv [number of points per leaf]");
         System.out.println();
         System.out.println("       -h | --help                      :       display this help");
         System.out.println();
-        System.out.println("Format of 'geopoints.csv'; a string id, then latitude, then longitude, separated by one or more spaces");
-        System.out.println("Format of 'queries.csv'; minimum latitude, maximum latitude, minimum longitude and maximum longitude, all separated by one or more spaces");
+        System.out.println("  Format of 'geopoints.csv'; a string id, then latitude, then longitude, separated by one or more spaces");
+        System.out.println("  Format of 'queries.csv'; minimum latitude, maximum latitude, minimum longitude and maximum longitude, all separated by one or more spaces");
+        System.out.println("  The number of points per leaf is optional (default 1024). If provided it must be an integer bigger than one");
+        System.out.println();
     }
 
     /**
