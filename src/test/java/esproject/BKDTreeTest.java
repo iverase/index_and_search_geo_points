@@ -111,4 +111,41 @@ public class BKDTreeTest {
         }
 
     }
+
+    @Test
+    public void testRandomContainsPartial() {
+        Random random = new Random();
+        int docs = random.nextInt(150000) + 150000;
+        ArrayList<Document> documents = new ArrayList<>(docs);
+        for (int i = 0; i<docs; i ++) {
+            String val = Float.toString(random.nextFloat());
+            double lon = random.nextDouble() * 360 -180;
+            double lat = random.nextDouble() * 180 - 90;
+            documents.add(new Document(val, lon, lat));
+        }
+        int starDocument = random.nextInt(docs);
+        int endDocument = starDocument + random.nextInt(docs - starDocument);
+        MemoryBKDTree tree = new MemoryBKDTree(documents.toArray(new Document[documents.size()]), starDocument, endDocument);
+        List<Document> treeAnswer = new ArrayList<>();
+        for (int j= 0; j< 100; j ++) {
+            double minlon = random.nextDouble() * 360 - 180;
+            double maxlon =random.nextDouble() * 360 - 180;
+            double height = random.nextDouble() * 90;
+            double minLat = random.nextDouble() * 180 - 90;
+            double maxLat = (minLat + height > 90) ? 90 : minLat + height;
+            double[] lowerPoint = new double[]{minlon, minLat};
+            double[] upperPoint = new double[]{maxlon, maxLat};
+            ArrayList<Document> answer = new ArrayList<>();
+            for (int i = starDocument; i < endDocument; i++) {
+                Document doc = documents.get(i);
+                if (BoundingBoxUtils.contains(upperPoint, lowerPoint, doc.point)) {
+                    answer.add(doc);
+                }
+            }
+            tree.contains(upperPoint, lowerPoint, treeAnswer);
+            assert answer.size() == treeAnswer.size() : "Expected: " + answer.size() + " got: " +  treeAnswer.size();
+            treeAnswer.clear();
+        }
+
+    }
 }

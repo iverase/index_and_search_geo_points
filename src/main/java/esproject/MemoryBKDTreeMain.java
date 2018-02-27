@@ -61,9 +61,17 @@ public class MemoryBKDTreeMain {
         double timeLoadingDocuments = 1e-3 * (end -start);
         System.out.println("A total of " + numberDocs + " points have been loaded in memory in " +formatDouble(timeLoadingDocuments) + " seconds");
         System.out.println();
+
+        int documentsFullTree = getDocumentsForFullTree(documents.length, docsPerLeaf);
+
         System.out.println( "building the index ...");
         start = System.currentTimeMillis();
-        MemoryBKDTree tree = new MemoryBKDTree(documents, docsPerLeaf);
+        MemoryBKDTree bigTree = new MemoryBKDTree(documents, docsPerLeaf, 0, documentsFullTree);
+        MemoryBKDTree smallTree = null;
+        if (documentsFullTree < documents.length) {
+            smallTree = new MemoryBKDTree(documents, docsPerLeaf, documentsFullTree, documents.length);
+        }
+
         end = System.currentTimeMillis();
         double timeBuildingIndex = 1e-3 * (end -start);
         System.out.println("Index has been built in : " + formatDouble(timeBuildingIndex) + " seconds");
@@ -71,7 +79,7 @@ public class MemoryBKDTreeMain {
         System.out.println( "Executing queries...");
         System.out.println();
 
-        int[] results = executeQueries(queryFile, tree);
+        int[] results = executeQueries(queryFile, bigTree, smallTree);
 
         System.out.println("Summary");
         System.out.println("--------");
@@ -80,6 +88,24 @@ public class MemoryBKDTreeMain {
         System.out.println(results[0] + " queries has been executed in " + formatDouble(1e-3 * results[2]) + " seconds (" + formatDouble(results[0]/(1e-3 * results[2])) + " queries per second)");
         System.out.println("Total number of hits: " + results[1]);
         System.out.println();
+    }
+
+    /**
+     * Returns the number of documents needed to fill up a tree.
+     * @param length The size of the documents.
+     * @param maxDocsPerLef the max number of documents per leaf.
+     * @return the number of documents needed to fill up a tree. Always lower or equal
+     * to the provided length.
+     */
+    private static int getDocumentsForFullTree(final int length, final int maxDocsPerLef) {
+        if (length <= maxDocsPerLef) {
+            return length;
+        }
+        int level = 2;
+        while ((int) Math.pow(2, level - 1) * maxDocsPerLef < length) {
+            level++;
+        }
+        return (int) Math.pow(2, level - 2) * maxDocsPerLef;
     }
 
     /**
@@ -141,11 +167,12 @@ public class MemoryBKDTreeMain {
      * Reads the file containing the queries and execute them.
      *
      * @param file the location of the queries file.
-     * @param tree the {@link MemoryBKDTree} to be queried.
+     * @param tree1 the first {@link MemoryBKDTree} to be queried.
+     * @param tree2 the second {@link MemoryBKDTree} to be queried.
      * @return an array containing the number of queries executed, the total hits and the total execution time
      * @throws IOException if there is an error reading the file.
      */
-    private static int[] executeQueries(File file, MemoryBKDTree tree) throws IOException{
+    private static int[] executeQueries(File file, MemoryBKDTree tree1, MemoryBKDTree tree2) throws IOException{
         FileInputStream inputStream = new FileInputStream(file);
         int totalTime =0;
         int totalHits =0;
@@ -181,7 +208,7 @@ public class MemoryBKDTreeMain {
                 continue;
             }
             long start = System.currentTimeMillis();
-            executeQuery(upperPoint, lowerPoint, tree, answerContainer);
+            executeQuery(upperPoint, lowerPoint, tree1, tree2, answerContainer);
             long end = System.currentTimeMillis();
             System.out.println();
             System.out.println("Hits: " + answerContainer.size());
@@ -202,14 +229,18 @@ public class MemoryBKDTreeMain {
      *
      * @param upperPoint The left upper corner of the bounding box.
      * @param lowerPoint The right lower corner of the bounding box.
-     * @param tree the {@link MemoryBKDTree} to be queried.
+     * @param tree1 the first {@link MemoryBKDTree} to be queried.
+     * @param tree2 the second {@link MemoryBKDTree} to be queried.
      * @param answer the list collector.
      */
-    private static void executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree, List<Document> answer) {
+    private static void executeQuery(double[] upperPoint, double[] lowerPoint, MemoryBKDTree tree1,  MemoryBKDTree tree2, List<Document> answer) {
         System.out.println("Executing query: " + lowerPoint[1] + " " + upperPoint[1] + " " + lowerPoint[0] + " " + upperPoint[0]);
         System.out.println();
 
-        tree.contains(upperPoint, lowerPoint, answer);
+        tree1.contains(upperPoint, lowerPoint, answer);
+        if (tree2 != null) {
+            tree2.contains(upperPoint, lowerPoint, answer);
+        }
 
         System.out.println(" Results");
         System.out.println(" --------------------------");

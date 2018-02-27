@@ -27,6 +27,14 @@ public class MemoryBKDTree {
      */
     private final int maxLevel;
     /**
+     * Start document index in the documents array
+     */
+    private final int startDocument;
+    /**
+     * End document index in the documents array
+     */
+    private final int endDocument;
+    /**
      * node id for the first leaf node. It represents as well the number of leaf nodes of the tree
      */
     private final int startLeafNodes;
@@ -58,7 +66,16 @@ public class MemoryBKDTree {
      * @param documents the documents to index.
      */
     public MemoryBKDTree(final Document[] documents) {
-        this(documents, DEFAULT_DOCUMENTS_PER_LEAF);
+        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, 0, documents.length);
+    }
+
+    /**
+     * Constructor that uses the default number of documents per leaf and a subset of the input array.
+     *
+     * @param documents the documents to index.
+     */
+    public MemoryBKDTree(final Document[] documents, int startDocuments, int endDocuments) {
+        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, startDocuments, endDocuments);
     }
 
     /**
@@ -68,12 +85,24 @@ public class MemoryBKDTree {
      * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
      */
     public MemoryBKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
+        this(documents, maxDocumentsPerLeaf, 0, documents.length);
+    }
+
+    /**
+     * Constructor that takes the number of documents per leaf and a start and a subset of the input array.
+     *
+     * @param documents           the documents to index.
+     * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
+     */
+    public MemoryBKDTree(final Document[] documents, final int maxDocumentsPerLeaf, int startDocuments, int endDocuments) {
         this.documents = documents;
-        this.maxLevel = getTreeLevels(documents.length, maxDocumentsPerLeaf);
+        this.maxLevel = getTreeLevels(endDocuments - startDocuments, maxDocumentsPerLeaf);
+        this.startDocument = startDocuments;
+        this.endDocument = endDocuments;
         // we cache this values
         this.startLeafNodes = (int) Math.pow(2, maxLevel - 1);
-        this.minimumDocsPerLeaf = this.documents.length / this.startLeafNodes;
-        this.leafsWithExtraDocument = this.documents.length % this.startLeafNodes;
+        this.minimumDocsPerLeaf = (endDocuments - startDocuments)/ this.startLeafNodes;
+        this.leafsWithExtraDocument = (endDocuments - startDocuments) % this.startLeafNodes;
         //init arrays for bounding boxes
         int totalNumberOfNodes = 2 * startLeafNodes - 1;
         this.maxBoundaries = new double[totalNumberOfNodes][2];
@@ -107,7 +136,7 @@ public class MemoryBKDTree {
      */
     private void buildTree() {
         //Sort by longitude
-        Arrays.sort(this.documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+        Arrays.sort(this.documents, this.startDocument, this.endDocument, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         //Sort by latitude each longitude partitions. If maxLevel is uneven then there is one more partition
         //by latitude.
         int numberLongitudePartitions = (int) Math.pow(2, this.maxLevel / 2);
@@ -299,9 +328,9 @@ public class MemoryBKDTree {
      */
     private int startDocuments(int positionLeaf) {
         if (positionLeaf  < leafsWithExtraDocument) {
-            return positionLeaf * (minimumDocsPerLeaf + 1);
+            return this.startDocument + positionLeaf * (minimumDocsPerLeaf + 1);
         } else {
-            return positionLeaf * minimumDocsPerLeaf + leafsWithExtraDocument;
+            return this.startDocument + positionLeaf * minimumDocsPerLeaf + leafsWithExtraDocument;
         }
     }
 
@@ -313,7 +342,7 @@ public class MemoryBKDTree {
      */
     private int endDocuments(int positionLeaf) {
         if (positionLeaf == startLeafNodes - 1) {
-            return this.documents.length;
+            return this.endDocument;
         } else {
             return startDocuments(positionLeaf + 1);
         }
