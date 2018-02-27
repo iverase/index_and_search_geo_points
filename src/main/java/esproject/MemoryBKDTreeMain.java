@@ -66,6 +66,7 @@ public class MemoryBKDTreeMain {
 
         System.out.println( "building the index ...");
         start = System.currentTimeMillis();
+        //TO DO: if we sort the array here by latitude we make sure the trees do not overlap.
         MemoryBKDTree bigTree = new MemoryBKDTree(documents, docsPerLeaf, 0, documentsFullTree);
         MemoryBKDTree smallTree = null;
         if (documentsFullTree < documents.length) {
