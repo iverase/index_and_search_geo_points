@@ -170,13 +170,6 @@ public class MemoryBKDTree {
         this.maxBoundaries[nodeId - 1][1] = maxLatitude;
         this.minBoundaries[nodeId - 1][0] = minLongitude;
         this.minBoundaries[nodeId - 1][1] = minLatitude;
-        StringBuilder builder = new StringBuilder("select geometry::STGeomFromText('POLYGON((");
-        builder.append(minLongitude + " " + minLatitude + ",");
-        builder.append(maxLongitude + " " + minLatitude + ",");
-        builder.append(maxLongitude + " " + maxLatitude + ",");
-        builder.append(minLongitude + " " + maxLatitude + ",");
-        builder.append(minLongitude + " " + minLatitude + "))',0) union all");
-        System.out.println(builder);
     }
 
     /**
