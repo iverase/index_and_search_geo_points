@@ -16,11 +16,11 @@ bulk mechanism described  on the paper.
 
 The static tree is a complete binary tree with a configurable maximum number of points per leaf nodes (it must be bigger than 1).
 The tree does not have any pointer between the nodes and relays on the properties of a complete binary tree for
-navigating the structure. It holds the following data structures:
+navigating the hierarchy. It holds the following data structures:
 
-* A sorted array of points (documents): All documents belonging to a node are group together. The size of the array is the number of
+* A sorted array of points (documents): All documents belonging to a leaf node are group together. The size of the array is the number of
 indexed points.
-* A sorted array of bounding boxes: Allows to get the bounding box of a tree node by node id. The size of the array is the number
+* A sorted array of bounding boxes: It allows to get the bounding box of a tree node by node id. The size of the array is the number
  of nodes in the tree.
 
 This implementation uses a bulk loading mechanism to build the tree that requires only three passes of the input points. One for sorting
