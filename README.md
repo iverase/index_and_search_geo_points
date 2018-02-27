@@ -31,10 +31,10 @@ tree has been built it cannot be modified and can only be used for performing sp
 the longitude as the pivoting dimension. For example for level 1 we have just one block, a matrix 1X1 where first dimension is the longitude
 and second dimension is the latitude. For level 2 a matrix 2X1, level 3 a matrix 2X2, level 4 a matrix 4X2, level 5 a matrix 4X4 and so on.
 
-The spatial queries are performed using the classical approach: Starting from the root node, it will check the spatial relationship of the
+The spatial queries are performed using the classical approach. Starting from the root node, it will check the spatial relationship of the
 provided bounding box with the bonding box of the current node. If the relationship is disjoint, then it ignores that part of the tree, if within
 then it will collect all documents under that node, else it will go one level down and perform the same operation except for
-leaf nodes where it will then check the points under the node one by one against the provided bounding box.
+leaf nodes where it will check the points under the node one by one against the provided bounding box.
 
 ## Compiling the project
 
@@ -46,7 +46,7 @@ The project is built using [gradle](https://gradle.org/). From the root director
 
 `gradle build`
 
-A executable jar called index_and_search_geo_points.jar will be created under build/libs directory.
+The executable jar called index_and_search_geo_points.jar will be created under build/libs directory.
 
 ## Running the program
 
@@ -79,10 +79,8 @@ If not provided, it will use the default value of 1024 points per leaf. This val
 
 `java -jar index_and_search_geo_points.jar /path/to/points.csv /path/to/queries 512`
 
-In addition if the input list is big, you might want to resize your heap memory using the following syntax:
+If the input list is big, you might want to resize your heap memory using the following syntax, that provides in this case a 6 gigabytes to the JVM.:
 
-`java -Xmx4g -Xms4g -jar index_and_search_geo_points.jar /path/to/points.csv /path/to/queries 512`
-
-This will provide a heap of 4 gigabytes to the JVM.
+`java -Xmx6g -Xms6g -jar index_and_search_geo_points.jar /path/to/points.csv /path/to/queries 512`
 
 After running the command, the program will load the points in memory, build the index, perform the queries and show the results.
