@@ -79,7 +79,7 @@ If not provided, it will use the default value of 1024 points per leaf. This val
 
 `java -jar index_and_search_geo_points.jar /path/to/points.csv /path/to/queries 512`
 
-If the input list is big, you might want to resize your heap memory using the following syntax, that provides in this case a 6 gigabytes to the JVM.:
+If the input list is big, you might want to resize your heap memory using the following syntax, that in this case provides 6 gigabytes of heap space to the JVM.:
 
 `java -Xmx6g -Xms6g -jar index_and_search_geo_points.jar /path/to/points.csv /path/to/queries 512`
 
