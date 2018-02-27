@@ -96,7 +96,7 @@ public class MemoryBKDTree {
         int estimate = maxDocumentsPerLeaf;
         while (estimate < numberDocuments) {
             levels++;
-            estimate = (int) Math.pow(2, levels) * maxDocumentsPerLeaf;
+            estimate = (int) Math.pow(2, levels - 1) * maxDocumentsPerLeaf;
         }
         return levels;
     }
