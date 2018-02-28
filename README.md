@@ -4,17 +4,14 @@
 
 This project allows to index a provided list of points, defined by latitude and longitude, into an in-memory BKD tree and
 query the input data using bounding boxes. A BKD tree as defined in this [paper](https://users.cs.duke.edu/~pankaj/publications/papers/bkd-sstd.pdf)
-consists on a set (a forest) of static KDB trees. In this implementation, we are indexing a fixed list of points in memory
-so the program creates just one of those trees with the input list. There is a limit on the number of points that can be indexed
-and it is defined as the number of points that can fit on 80% of the heap provided to the JVM, the rest of the points will be ignored.
+consists on a set (a forest) of static KDB trees. In this implementation, we crete as many as complete KDB trees as possible with
+so final occupancy is close to 100%.
 
-The depth of the tree is defined by the number of points provided and the maximum number of points per leaf ensuring a minimum
-occupancy of 50% and a maximum difference of points for each node equals to 1. The tree is built using the loading
-bulk mechanism described  on the paper.
+ The KDBs tree are built using the loading bulk mechanism described  on the paper.
 
-## Description of the in-memory tree
+## Description of the KDB tree
 
-The static tree is a complete binary tree with a configurable maximum number of points per leaf nodes (it must be bigger than 1).
+The KDB tree is a complete binary tree with a configurable maximum number of points per leaf nodes (it must be bigger than 1).
 The tree does not have any pointer between the nodes and relays on the properties of a complete binary tree for
 navigating the hierarchy. It holds the following data structures:
 
