@@ -14,6 +14,6 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'esproject.MemoryBKDTreeMain'
+        attributes 'Main-Class': 'esproject.BKDTreeMain'
     }
 }
