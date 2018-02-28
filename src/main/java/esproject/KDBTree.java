@@ -92,7 +92,8 @@ public class KDBTree implements Tree {
     }
 
     /**
-     * Constructor that takes the number of documents per leaf and a start and a subset of the input array.
+     * Constructor that takes the number of documents per leaf and a start and a subset of the
+     * input array.
      *
      * @param documents           the documents to index.
      * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
@@ -135,10 +136,11 @@ public class KDBTree implements Tree {
     }
 
     /**
-     * Build the tree. First uses merge sort to order document by longitude. Then merge sort again to order
-     * documents by longitude partition. Finally computes the bounding boxes for each node of the tree.
+     * Build the tree. First it sorts the documents by longitude if needed. Then it sorts again to
+     * order documents by latitude each longitude partition. Finally computes the bounding
+     * boxes for each node of the tree upwards.
      *
-     * @param sorted              flags if th documents are sorted by longitude.
+     * @param sorted flags if the documents are already sorted by longitude.
      */
     private void buildTree(boolean sorted) {
         //Sort by longitude if needed
@@ -149,7 +151,7 @@ public class KDBTree implements Tree {
         //by latitude.
         int numberLongitudePartitions = (int) Math.pow(2, this.maxLevel / 2);
         int leafNodesPerLongitudePartition = this.startLeafNodes / numberLongitudePartitions;
-        for (int i = 0; i < startLeafNodes;) {
+        for (int i = 0; i < this.startLeafNodes;) {
             int start = startDocuments(i);
             int end = endDocuments(i + leafNodesPerLongitudePartition - 1);
             Arrays.sort(this.documents, start, end, (o1, o2) -> (o1.point[1] > o2.point[1]) ? 1 : o1.point[1] < o2.point[1] ? -1 : 0);
@@ -159,7 +161,7 @@ public class KDBTree implements Tree {
         for (int i = 0; i < this.startLeafNodes; i++) {
             int start = startDocuments(i);
             int end = endDocuments(i);
-            processLeafBoundaries(start, end, startLeafNodes + i);
+            processLeafBoundaries(start, end, this.startLeafNodes + i);
         }
         //now build the rest of the tree upwards
         processNodeBoundaries(this.maxLevel - 1);
@@ -386,15 +388,15 @@ public class KDBTree implements Tree {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + documents.hashCode();
-        result = 31 * result + maxBoundaries.hashCode();
-        result = 31 * result + minBoundaries.hashCode();
-        result = 31 * result + Integer.hashCode(maxLevel);
-        result = 31 * result + Integer.hashCode(startDocument);
-        result = 31 * result + Integer.hashCode(endDocument);
-        result = 31 * result + Integer.hashCode(startLeafNodes);
-        result = 31 * result + Integer.hashCode(minimumDocsPerLeaf);
-        result = 31 * result + Integer.hashCode(leafsWithExtraDocument);
+        result = 31 * result + this.documents.hashCode();
+        result = 31 * result + this.maxBoundaries.hashCode();
+        result = 31 * result + this.minBoundaries.hashCode();
+        result = 31 * result + Integer.hashCode(this.maxLevel);
+        result = 31 * result + Integer.hashCode(this.startDocument);
+        result = 31 * result + Integer.hashCode(this.endDocument);
+        result = 31 * result + Integer.hashCode(this.startLeafNodes);
+        result = 31 * result + Integer.hashCode(this.minimumDocsPerLeaf);
+        result = 31 * result + Integer.hashCode(this.leafsWithExtraDocument);
         return result;
     }
 
