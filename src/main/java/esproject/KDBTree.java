@@ -390,6 +390,8 @@ public class KDBTree implements Tree {
         result = 31 * result + maxBoundaries.hashCode();
         result = 31 * result + minBoundaries.hashCode();
         result = 31 * result + Integer.hashCode(maxLevel);
+        result = 31 * result + Integer.hashCode(startDocument);
+        result = 31 * result + Integer.hashCode(endDocument);
         result = 31 * result + Integer.hashCode(startLeafNodes);
         result = 31 * result + Integer.hashCode(minimumDocsPerLeaf);
         result = 31 * result + Integer.hashCode(leafsWithExtraDocument);
