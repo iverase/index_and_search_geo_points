@@ -404,6 +404,6 @@ public class KDBTree implements Tree {
 
     @Override
     public String toString() {
-        return "levels: " + this.maxLevel  + "; docs per leaf: " + minimumDocsPerLeaf + "; number docs: " + (endDocument - startDocument);
+        return "levels: " + this.maxLevel  + "; points per leaf: " + minimumDocsPerLeaf + "; number points: " + (endDocument - startDocument);
     }
 }
