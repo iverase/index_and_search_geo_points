@@ -5,17 +5,36 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a BKD tree
+ * Implementation of a BKD tree which is a collection of {@link KDBTree} built inn a way
+ * that ensures that all trees leaf nodes contains the required maximum documents er leaf
+ * except the last one which only has one level.
+ *
+ * The array of {@link Document} is sorted before creating the trees so we ensure that trees do not overlap.
  */
-public class BKDTree {
+public class BKDTree implements Tree {
 
+    /**
+     * The list of {@link KDBTree} trees.
+     */
     private final List<KDBTree> KBDTrees;
 
+    /**
+     * Constructor that uses the default documents per leaf.
+     *
+     * @param documents the documents to be indexed.
+     */
     public BKDTree(final Document[] documents) {
         this(documents, KDBTree.DEFAULT_DOCUMENTS_PER_LEAF);
     }
 
+    /**
+     * Constructor with documents per leaf.
+     *
+     * @param documents the documents to be indexed.
+     * @param maxDocumentsPerLeaf the documents per leaf.
+     */
     public BKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
+        // we sort the array now to mke sure the trees do not overlap
         Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         this.KBDTrees = new ArrayList<>();
         int start = 0;
@@ -47,14 +66,7 @@ public class BKDTree {
         return (int) Math.pow(2, level - 2) * maxDocsPerLef;
     }
 
-    /**
-     * Computes recursively the points inside the provided bounding box by checking the relationship
-     * of the provided bounding box with the node bounding box. Adds the result to the list collector.
-     *
-     * @param upperPoint The upper left corner of the bounding box.
-     * @param lowerPoint The lower right corner of the bounding box.
-     * @param collector  The list collector.
-     */
+   @Override
     public void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
         for (KDBTree tree : this.KBDTrees) {
             tree.contains(upperPoint, lowerPoint, collector);

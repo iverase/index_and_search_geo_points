@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a in-memory BKD tree (static KDB tree) . It is created with the array of {@link Document}s to be indexed
- * and optionally the documents per leaf. It cannot be modified once created. It builds the tree using a
+ * Implementation of a static KDB tree. It is created with the array of {@link Document}s to be indexed
+ * and optionally the documents per leaf. It builds the tree using a
  * bulk mechanism that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
  * and one to compute the nodes bounding boxes. It is not thread safe.
  * <p>
  * It supports queries by bounding box.
  */
-public class KDBTree {
+public class KDBTree implements Tree {
 
     /**
      * Default max number of points on leaf nodes
@@ -59,6 +59,34 @@ public class KDBTree {
      * Current node
      */
     private int nodeId;
+
+    /**
+     * Constructor that uses the default number of documents per leaf.
+     *
+     * @param documents the documents to index.
+     */
+    public KDBTree(final Document[] documents) {
+        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, 0, documents.length, false);
+    }
+
+    /**
+     * Constructor that uses the default number of documents per leaf and a subset of the input array.
+     *
+     * @param documents the documents to index.
+     */
+    public KDBTree(final Document[] documents, int startDocuments, int endDocuments) {
+        this(documents, DEFAULT_DOCUMENTS_PER_LEAF, startDocuments, endDocuments, false);
+    }
+
+    /**
+     * Constructor that takes the number of documents per leaf.
+     *
+     * @param documents           the documents to index.
+     * @param maxDocumentsPerLeaf maximum number of documents per leaf node.
+     */
+    public KDBTree(final Document[] documents, final int maxDocumentsPerLeaf) {
+        this(documents, maxDocumentsPerLeaf, 0, documents.length, false);
+    }
 
     /**
      * Constructor that takes the number of documents per leaf and a start and a subset of the input array.
@@ -178,14 +206,7 @@ public class KDBTree {
         this.minBoundaries[nodeId - 1][1] = minLatitude;
     }
 
-    /**
-     * Computes recursively the points inside the provided bounding box by checking the relationship
-     * of the provided bounding box with the node bounding box. Adds the result to the list collector.
-     *
-     * @param upperPoint The upper left corner of the bounding box.
-     * @param lowerPoint The lower right corner of the bounding box.
-     * @param collector  The list collector.
-     */
+    @Override
     public void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
         final double[] thisUpperPoint = this.maxBoundaries[nodeId - 1];
         final double[] thisLowerPoint = this.minBoundaries[nodeId - 1];
@@ -380,6 +401,6 @@ public class KDBTree {
 
     @Override
     public String toString() {
-        return "levels: " + this.maxLevel  + "; docs per leaf:" + minimumDocsPerLeaf + "; number docs:" + documents.length;
+        return "levels: " + this.maxLevel  + "; docs per leaf: " + minimumDocsPerLeaf + "; number docs: " + (endDocument - startDocument);
     }
 }

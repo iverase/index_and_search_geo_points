@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Represents a document that can be indexed in a {@link KDBTree}.
  */
-class Document {
+public class Document {
 
     /** the string data **/
     final String data;
