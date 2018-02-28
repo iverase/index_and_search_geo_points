@@ -17,7 +17,7 @@ public class BKDTree implements Tree {
     /**
      * The list of {@link KDBTree} trees.
      */
-    private final List<KDBTree> KBDTrees;
+    private final List<KDBTree> KDBTrees;
 
     /**
      * Constructor that uses the default documents per leaf.
@@ -36,12 +36,12 @@ public class BKDTree implements Tree {
      */
     public BKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
         // we sort the array now to mke sure the trees do not overlap
-        this.KBDTrees = new ArrayList<>();
+        this.KDBTrees = new ArrayList<>();
         Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         int start = 0;
         while (true) {
             int docsFullTree = getDocumentsForFullTree(documents.length - start, maxDocumentsPerLeaf);
-            this.KBDTrees.add(new KDBTree(documents, maxDocumentsPerLeaf, start, start + docsFullTree, true));
+            this.KDBTrees.add(new KDBTree(documents, maxDocumentsPerLeaf, start, start + docsFullTree, true));
             start = start + docsFullTree;
             if (start >= documents.length) {
                 break;
@@ -69,7 +69,7 @@ public class BKDTree implements Tree {
 
    @Override
     public void contains(final double[] upperPoint, final double[] lowerPoint, final List<Document> collector) {
-        for (KDBTree tree : this.KBDTrees) {
+        for (KDBTree tree : this.KDBTrees) {
             tree.contains(upperPoint, lowerPoint, collector);
         }
     }
@@ -77,7 +77,7 @@ public class BKDTree implements Tree {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + this.KBDTrees.hashCode();
+        result = 31 * result + this.KDBTrees.hashCode();
         return result;
     }
 
@@ -87,11 +87,16 @@ public class BKDTree implements Tree {
             return false;
         }
         BKDTree other = (BKDTree) obj;
-        return this.KBDTrees.equals(other.KBDTrees);
+        return this.KDBTrees.equals(other.KDBTrees);
     }
 
     @Override
     public String toString() {
-        return this.KBDTrees.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("BKD tree built with " + this.KDBTrees.size() + " KDB trees:\n" );
+        for(int i =0; i < this.KDBTrees.size(); i++) {
+            builder.append(" Tree " + (i + 1) + ": " + this.KDBTrees.get(i).toString() + "\n");
+        }
+        return builder.toString();
     }
 }
