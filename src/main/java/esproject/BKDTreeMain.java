@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Class to execute program.
  */
-public class MemoryBKDTreeMain {
+public class BKDTreeMain {
 
     /**
      * Entry point of the program.
@@ -257,7 +257,7 @@ public class MemoryBKDTreeMain {
         return numberFormatter.format(aDouble);
     }
 
-    private MemoryBKDTreeMain() {
+    private BKDTreeMain() {
         //no instances
     }
 }
