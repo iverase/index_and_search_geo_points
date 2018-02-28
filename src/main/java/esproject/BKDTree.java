@@ -6,10 +6,11 @@ import java.util.List;
 
 /**
  * Implementation of a BKD tree which is a collection of {@link KDBTree} built inn a way
- * that ensures that all trees leaf nodes contains the required maximum documents er leaf
+ * that ensures that all trees leaf nodes contains the required maximum documents per leaf
  * except the last one which only has one level.
  *
- * The array of {@link Document} is sorted before creating the trees so we ensure that trees do not overlap.
+ * The array of {@link Document} is sorted before creating the trees so we ensure that trees
+ * do not overlap.
  */
 public class BKDTree implements Tree {
 
@@ -35,8 +36,8 @@ public class BKDTree implements Tree {
      */
     public BKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
         // we sort the array now to mke sure the trees do not overlap
-        Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         this.KBDTrees = new ArrayList<>();
+        Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
         int start = 0;
         while (true) {
             int docsFullTree = getDocumentsForFullTree(documents.length - start, maxDocumentsPerLeaf);

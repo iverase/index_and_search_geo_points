@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of a static KDB tree. It is created with the array of {@link Document}s to be indexed
- * and optionally the documents per leaf. It builds the tree using a
- * bulk mechanism that requires only three passes of the documents. One to sort by longitude, one to sort by latitude
- * and one to compute the nodes bounding boxes. It is not thread safe.
+ * Implementation of a static KDB tree. It is created with the array of {@link Document} to be indexed
+ * and optionally the documents per leaf. It ensure a occupation of 50% for leaf nodes except for the
+ * root node.
+ * <p>
+ * It builds the tree using a bulk mechanism that requires only three passes of the documents.
+ * One to sort by longitude, one to sort by latitude and one to compute the nodes bounding boxes.
+ * It is not thread safe.
  * <p>
  * It supports queries by bounding box.
  */
