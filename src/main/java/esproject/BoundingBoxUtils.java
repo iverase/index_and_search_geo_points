@@ -25,7 +25,7 @@ class BoundingBoxUtils {
     public static boolean checkBoundingBox(final double[] upperPoint, final double[] lowerPoint) {
         if (checkLongitude(upperPoint[0]) && checkLongitude(lowerPoint[0])
                 && checkLatitude(lowerPoint[1]) && checkLatitude(lowerPoint[1])) {
-            if (upperPoint[1] > lowerPoint[1]) {
+            if (upperPoint[1] >= lowerPoint[1]) {
                 return true;
             }
         }

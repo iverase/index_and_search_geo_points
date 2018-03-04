@@ -1,7 +1,6 @@
 package esproject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,9 +34,9 @@ public class BKDTree implements Tree {
      * @param maxDocumentsPerLeaf the documents per leaf.
      */
     public BKDTree(final Document[] documents, final int maxDocumentsPerLeaf) {
-        // we sort the array now to mke sure the trees do not overlap
         this.KDBTrees = new ArrayList<>();
-        Arrays.sort(documents, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+        // we sort the array now to make sure the trees do not overlap
+        SortingUtils.sortByDimension(documents, 0);
         int start = 0;
         while (true) {
             int docsFullTree = getDocumentsForFullTree(documents.length - start, maxDocumentsPerLeaf);

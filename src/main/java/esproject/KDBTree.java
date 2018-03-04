@@ -1,6 +1,5 @@
 package esproject;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -145,7 +144,7 @@ public class KDBTree implements Tree {
     private void buildTree(boolean sorted) {
         //Sort by longitude if needed
         if (!sorted) {
-            Arrays.sort(this.documents, this.startDocument, this.endDocument, (o1, o2) -> (o1.point[0] > o2.point[0]) ? 1 : o1.point[0] < o2.point[0] ? -1 : 0);
+            SortingUtils.sortByDimension(this.documents, this.startDocument, this.endDocument, 0);
         }
         //Sort by latitude each longitude partitions. If maxLevel is uneven then there is one more partition
         //by latitude.
@@ -154,7 +153,7 @@ public class KDBTree implements Tree {
         for (int i = 0; i < this.startLeafNodes;) {
             int start = startDocuments(i);
             int end = endDocuments(i + leafNodesPerLongitudePartition - 1);
-            Arrays.sort(this.documents, start, end, (o1, o2) -> (o1.point[1] > o2.point[1]) ? 1 : o1.point[1] < o2.point[1] ? -1 : 0);
+            SortingUtils.sortByDimension(this.documents, start, end, 1);
             i += leafNodesPerLongitudePartition;
         }
         //process leaf boundaries
